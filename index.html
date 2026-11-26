@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f2730">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Portail BM">
+<title>Portail Bennes Maupu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#c8102e; --red-d:#9b0c23; --steel:#1f2730; --steel-2:#2b3540; --steel-3:#3a4652;
+  --bg:#eef1f4; --card:#fff; --txt:#1c232b; --mut:#6b7783; --line:#dde2e7;
+  --ok:#2e9d5b; --warn:#e08a00; --info:#2a6fdb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+h1,h2,h3,.cond{font-family:"Barlow Condensed",Barlow,sans-serif;letter-spacing:.3px}
+.hidden{display:none!important}
+
+/* Boutons relief 3D (comme le catalogue) */
+.btn{font:600 14px Barlow;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;color:#fff;
+  background:linear-gradient(180deg,#e0213f,var(--red));box-shadow:0 4px 0 var(--red-d),0 6px 12px rgba(0,0,0,.18);
+  transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-1px) perspective(400px) rotateX(4deg)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--red-d),0 2px 4px rgba(0,0,0,.2)}
+.btn.steel{background:linear-gradient(180deg,var(--steel-3),var(--steel-2));box-shadow:0 4px 0 #11161c,0 6px 12px rgba(0,0,0,.18)}
+.btn.ghost{background:transparent;color:#cfd6dd;box-shadow:none;border:1px solid #4a5662}
+
+/* Connexion */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 30% 20%,#34404c,var(--steel))}
+.login-box{background:var(--card);border-radius:16px;padding:32px;width:min(380px,92vw);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.login-box h1{margin:0 0 4px;font-size:30px}
+.login-box p{margin:0 0 20px;color:var(--mut);font-size:14px}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:15px Barlow}
+.demo{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);font-size:13px;color:var(--mut)}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+
+/* En-tête */
+header{background:var(--steel);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:5}
+.logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#e0213f,var(--red-d));display:flex;align-items:center;justify-content:center;font:700 18px "Barlow Condensed"}
+.htitle{line-height:1.1}
+.htitle b{font:700 20px "Barlow Condensed"}
+.htitle small{display:block;color:#9fabb6;font-size:12px}
+.spacer{flex:1}
+.user{text-align:right;line-height:1.15}
+.user b{display:block}
+.rolebadges{display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap;margin-top:3px}
+.rb{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;background:var(--steel-3);color:#dfe5ea;text-transform:uppercase}
+
+main{max-width:1200px;margin:0 auto;padding:22px 20px 60px}
+.hello h2{margin:0;font-size:28px}
+.hello p{margin:2px 0 18px;color:var(--mut)}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{padding:8px 14px;border-radius:8px;background:#fff;border:1px solid var(--line);cursor:pointer;font-weight:600}
+.tab.on{background:var(--steel);color:#fff;border-color:var(--steel)}
+
+/* Tuiles apps */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.tile{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(20,30,40,.07);border-top:5px solid var(--c,var(--red));display:flex;flex-direction:column}
+.tile-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ico{width:40px;height:40px;border-radius:10px;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font:700 16px "Barlow Condensed"}
+.tile-h h3{margin:0;font-size:19px}
+.tile-h small{color:var(--mut);font-size:12px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;flex:1}
+.kpi{background:#f5f7f9;border-radius:8px;padding:8px 10px}
+.kpi b{display:block;font:700 24px "Barlow Condensed"}
+.kpi span{font-size:12px;color:var(--mut)}
+.kpi.alert b{color:var(--red)}
+.tile .btn{width:100%}
+
+/* À traiter */
+.panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(20,30,40,.07);margin-top:20px}
+.panel h3{margin:0 0 10px;font-size:20px}
+.todo{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.todo:last-child{border-bottom:0}
+.tag{font-size:11px;font-weight:700;color:#fff;padding:3px 7px;border-radius:5px;white-space:nowrap}
+.todo .t{flex:1}
+.todo .t small{display:block;color:var(--mut);font-size:12px}
+.pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;color:#fff;white-space:nowrap}
+.empty{color:var(--mut);font-style:italic;padding:8px 4px}
+
+/* Admin */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-family:"Barlow Condensed";font-size:15px;background:#f5f7f9}
+td select{padding:5px 6px;font-size:13px}
+.note{font-size:13px;color:var(--mut);margin-top:10px}
+
+@media (max-width:600px){
+  header{flex-wrap:wrap}
+  .user{text-align:left;width:100%}
+  .rolebadges{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ CONNEXION ============ -->
+<section id="login">
+  <div class="login-box">
+    <h1>Portail Bennes Maupu</h1>
+    <p>Accès unique à toutes les applications internes</p>
+    <form id="login-form">
+      <label for="l-email">Email</label>
+      <input id="l-email" type="email" autocomplete="username" required>
+      <label for="l-pass">Mot de passe</label>
+      <input id="l-pass" type="password" autocomplete="current-password" required>
+      <div class="err" id="l-err"></div>
+      <button class="btn" type="submit" style="width:100%">Se connecter</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ PORTAIL ============ -->
+<section id="app" class="hidden">
+  <header>
+    <div class="logo">BM</div>
+    <div class="htitle"><b>Portail</b><small>Bennes MAUPU SAS</small></div>
+    <div class="spacer"></div>
+    <div class="user"><b id="u-name"></b><div class="rolebadges" id="u-roles"></div></div>
+    <button class="btn ghost" id="logout">Déconnexion</button>
+  </header>
+  <main>
+    <div class="hello"><h2 id="hello"></h2><p id="hello-sub"></p></div>
+    <div class="tabs" id="tabs">
+      <div class="tab on" data-tab="dash">Tableau de bord</div>
+      <div class="tab" data-tab="admin" id="tab-admin">Utilisateurs &amp; rôles</div>
+    </div>
+
+    <div id="view-dash">
+      <p class="note" style="margin:-8px 0 12px">ℹ️ Chiffres d'exemple — les vrais chiffres de chaque app seront branchés à l'étape 3c.</p>
+      <div class="grid" id="tiles"></div>
+      <div class="panel">
+        <h3>À traiter</h3>
+        <div id="todos"></div>
+      </div>
+    </div>
+
+    <div id="view-admin" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3>Accès par utilisateur</h3>
+        <div style="overflow-x:auto"><table id="admin-table"></table></div>
+        <div class="err" id="adm-msg" style="color:var(--ok)"></div>
+        <p class="note">Chaque modification est enregistrée immédiatement. « — » = pas d'accès à l'app.<br>
+        <b>Ajouter une personne :</b> pour l'instant, créer son compte dans Supabase (projet Portail → Authentication → Users → Add user, cocher Auto Confirm) : elle apparaît ici automatiquement. La création directe depuis le portail arrive à l'étape 3b.</p>
+      </div>
+    </div>
+  </main>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+
+/* =================== CATALOGUE DES APPS =================== */
+const APPS = [
+  { id:"pr",   name:"Pièces de rechange", sub:"PRODUCTION - Services pièces de rechanges", ico:"PR", color:"#c8102e",
+    url:"/pr/", roles:["RESPONSABLE","PREPARATEUR","REPARATEUR","COORDINATEUR PEINTURE"] },
+  { id:"nc",   name:"Non-conformités", sub:"Internes & externes", ico:"NC", color:"#e08a00",
+    url:"/nc/", roles:["Développeur","Responsable","Observateur"] },
+  { id:"conf", name:"Configurateur", sub:"Devis commerciaux", ico:"CF", color:"#1d5fbf",
+    url:"/configurateur/", roles:["Direction","Vente","Commercial"] },
+  { id:"liv",  name:"Réception livraisons", sub:"Colisage fournisseurs", ico:"RL", color:"#2e9d5b",
+    url:"/livraison/", roles:["Responsable","Réceptionnaire"] },
+  { id:"gar",  name:"Suivi garanties", sub:"SAV — garantie@maupu.eu", ico:"SG", color:"#7a3db8",
+    url:"#", roles:["Responsable","Lecture"] },
+  { id:"cat",  name:"Catalogue pièces", sub:"Pièces détachées", ico:"CP", color:"#3a4652",
+    url:"/catalogue/", roles:["Admin","Lecture"] }
+];
+
+/* =================== SUPABASE PORTAIL =================== */
+const PORTAL_URL = "https://ktezxgwgaugdcinoinzr.supabase.co";
+const PORTAL_KEY = "sb_publishable_XZU04CODAK3O3mt_vDSlYw_CobBREfW";
+const sb = supabase.createClient(PORTAL_URL, PORTAL_KEY);
+let USERS = [];   // liste complète (admin uniquement)
+
+/* =================== DONNÉES D'EXEMPLE =================== */
+const PR_STATUTS = {
+  "Non Lancée":"#c8102e", "Lancée":"#e3b800", "Déposé en Zone peinture":"#f07c00", "En grenaillage":"#7b4a26",
+  "En peinture":"#1d5fbf", "Commande Prête":"#7a3db8", "Déposé en Zone D'expédition":"#2e9d5b", "Terminée":"#111"
+};
+/* Statuts visibles par rôle (repris de l'app PR) */
+const PR_VISIBLE = {
+  "RESPONSABLE": Object.keys(PR_STATUTS),
+  "PREPARATEUR": ["Lancée","Déposé en Zone peinture","Commande Prête","Déposé en Zone D'expédition"],
+  "REPARATEUR":  ["Lancée","Déposé en Zone peinture","Commande Prête","Déposé en Zone D'expédition","Terminée"],
+  "COORDINATEUR PEINTURE": ["Déposé en Zone peinture","En grenaillage","En peinture","Commande Prête"]
+};
+const PR = [
+  { num:"OF-24_101", client:"SARL Lemaire",   statut:"Non Lancée", imp:"URGENT PANNE CLIENT" },
+  { num:"OF-24_102", client:"EARL Dubois",    statut:"Lancée", imp:"Délai Normal" },
+  { num:"OF-24_103", client:"GAEC des Prés",  statut:"En peinture", imp:"URGENT GROUPAGE" },
+  { num:"OF-24_104", client:"Agri Centre",    statut:"Déposé en Zone peinture", imp:"URGENT PANNE CLIENT" },
+  { num:"OF-24_105", client:"SAV Maupu",      statut:"Commande Prête", imp:"Délai Normal" },
+  { num:"OF-24_106", client:"ETA Rousseau",   statut:"En grenaillage", imp:"Délai Normal" },
+  { num:"OF-24_107", client:"SARL Lemaire",   statut:"Terminée", imp:"Délai Normal" },
+  { num:"OF-24_108", client:"Cuma Beauce",    statut:"Lancée", imp:"URGENT PANNE CLIENT" }
+];
+const NC = [
+  { num:"NC-0012", type:"Interne", titre:"Soudure flèche non conforme", statut:"Non-traitée", grav:"Majeure", par:"Marc Dupont" },
+  { num:"NC-0013", type:"Externe", titre:"Vérin fuyard fournisseur",    statut:"En-cours de Résolution", grav:"Critique", par:"Luc Moreau" },
+  { num:"NC-0014", type:"Interne", titre:"Peinture coulures ridelles",  statut:"Non-traitée", grav:"Mineure", par:"Paul Leroy" },
+  { num:"NC-0015", type:"Externe", titre:"Feux arrière cassés à réception", statut:"Non-traitée", grav:"Majeure", par:"Luc Moreau" },
+  { num:"NC-0011", type:"Interne", titre:"Erreur cote plan",            statut:"Clôturée", grav:"Mineure", par:"Claire Bernard" }
+];
+const DEVIS = [
+  { num:"DEV-0041", client:"EARL Dubois",   par:"Sophie Martin", montant:38500, signe:true },
+  { num:"DEV-0042", client:"GAEC des Prés", par:"Sophie Martin", montant:52200, signe:false },
+  { num:"DEV-0043", client:"ETA Rousseau",  par:"Karim Haddad",  montant:29900, signe:false },
+  { num:"DEV-0044", client:"Cuma Beauce",   par:"Karim Haddad",  montant:61750, signe:true },
+  { num:"DEV-0045", client:"Agri Centre",   par:"Sophie Martin", montant:44100, signe:false }
+];
+const LIV = [
+  { fournisseur:"Hydro Système", attente:14, ecarts:1 },
+  { fournisseur:"Essieux TEK",   attente:6,  ecarts:0 },
+  { fournisseur:"Lumi Trailer",  attente:22, ecarts:3 }
+];
+const GAR = [
+  { num:"GA-2026-031", client:"EARL Dubois", statut:"En attente fournisseur" },
+  { num:"GA-2026-032", client:"Agri Centre", statut:"Ouverte" },
+  { num:"GA-2026-029", client:"SARL Lemaire", statut:"Clôturée" }
+];
+
+/* =================== OUTILS =================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const eur = n => n.toLocaleString("fr-FR") + " €";
+let current = null;
+
+/* =================== INDICATEURS PAR APP ET PAR RÔLE =================== */
+function kpisFor(appId, role, user){
+  switch(appId){
+    case "pr": {
+      const vis = PR.filter(d => PR_VISIBLE[role].includes(d.statut));
+      const actives = vis.filter(d => d.statut !== "Terminée");
+      const urg = actives.filter(d => d.imp === "URGENT PANNE CLIENT").length;
+      const k = [
+        { v: actives.length, l: role === "RESPONSABLE" ? "Demandes en cours" : "Demandes à mon poste" },
+        { v: urg, l: "Urgent panne client", alert: urg > 0 }
+      ];
+      if (role === "RESPONSABLE") k.push({ v: PR.filter(d => d.statut === "Non Lancée").length, l: "Non lancées" },
+                                         { v: PR.filter(d => d.statut === "Terminée").length, l: "Terminées" });
+      if (role === "COORDINATEUR PEINTURE") k.push({ v: vis.filter(d => d.statut === "En peinture").length, l: "En peinture" },
+                                                   { v: vis.filter(d => d.statut === "En grenaillage").length, l: "En grenaillage" });
+      return k;
+    }
+    case "nc": {
+      if (role === "Observateur"){
+        const mine = NC.filter(n => n.par === user.name);
+        return [{ v: mine.length, l: "Mes fiches" },
+                { v: mine.filter(n => n.statut !== "Clôturée").length, l: "Mes fiches ouvertes" }];
+      }
+      const nt = NC.filter(n => n.statut === "Non-traitée").length;
+      return [{ v: nt, l: "Non traitées", alert: nt > 0 },
+              { v: NC.filter(n => n.statut === "En-cours de Résolution").length, l: "En résolution" },
+              { v: NC.filter(n => n.grav === "Critique" && n.statut !== "Clôturée").length, l: "Critiques ouvertes", alert: true },
+              { v: NC.filter(n => n.statut === "Clôturée").length, l: "Clôturées" }];
+    }
+    case "conf": {
+      const list = role === "Commercial" ? DEVIS.filter(d => d.par === user.name) : DEVIS;
+      const signes = list.filter(d => d.signe);
+      return [{ v: list.length, l: role === "Commercial" ? "Mes devis" : "Devis (tous)" },
+              { v: signes.length, l: "Signés" },
+              { v: list.length - signes.length, l: "En attente signature" },
+              { v: eur(signes.reduce((s, d) => s + d.montant, 0)), l: "CA signé" }];
+    }
+    case "liv": {
+      const ec = LIV.reduce((s, f) => s + f.ecarts, 0);
+      return [{ v: LIV.length, l: "Fournisseurs attendus" },
+              { v: LIV.reduce((s, f) => s + f.attente, 0), l: "Pièces en attente" },
+              { v: ec, l: "Écarts à traiter", alert: ec > 0 }];
+    }
+    case "gar":
+      return [{ v: GAR.filter(g => g.statut !== "Clôturée").length, l: "Demandes ouvertes" },
+              { v: GAR.filter(g => g.statut === "Clôturée").length, l: "Clôturées" }];
+    case "cat":
+      return role === "Admin"
+        ? [{ v: 36, l: "Fiches véhicules" }, { v: 48, l: "Essieux à nommer", alert: true }]
+        : [{ v: 36, l: "Fiches véhicules" }];
+  }
+  return [];
+}
+
+/* =================== LISTE "À TRAITER" =================== */
+function todosFor(user){
+  const out = [], r = user.roles;
+  if (r.pr){
+    PR.filter(d => PR_VISIBLE[r.pr].includes(d.statut) && d.statut !== "Terminée")
+      .sort((a, b) => (b.imp === "URGENT PANNE CLIENT") - (a.imp === "URGENT PANNE CLIENT"))
+      .forEach(d => out.push({ app:"pr", titre:`${d.num} — ${d.client}`, sub:d.imp,
+        pill:d.statut, pc:PR_STATUTS[d.statut], prio: d.imp === "URGENT PANNE CLIENT" ? 0 : 2 }));
+  }
+  if (r.nc){
+    const list = r.nc === "Observateur" ? NC.filter(n => n.par === user.name) : NC;
+    list.filter(n => n.statut !== "Clôturée").forEach(n => out.push({ app:"nc",
+      titre:`${n.num} — ${n.titre}`, sub:`${n.type} · ${n.grav}`, pill:n.statut,
+      pc: n.statut === "Non-traitée" ? "#c8102e" : "#f07c00", prio: n.grav === "Critique" ? 0 : 1 }));
+  }
+  if (r.conf){
+    const list = r.conf === "Commercial" ? DEVIS.filter(d => d.par === user.name) : DEVIS;
+    list.filter(d => !d.signe).forEach(d => out.push({ app:"conf", titre:`${d.num} — ${d.client}`,
+      sub:`${eur(d.montant)}${r.conf !== "Commercial" ? " · " + d.par : ""}`, pill:"À faire signer", pc:"#1d5fbf", prio:3 }));
+  }
+  if (r.liv){
+    LIV.filter(f => f.ecarts).forEach(f => out.push({ app:"liv", titre:`${f.fournisseur} — ${f.ecarts} écart(s)`,
+      sub:`${f.attente} pièces en attente`, pill:"Écart", pc:"#c8102e", prio:1 }));
+  }
+  if (r.gar === "Responsable"){
+    GAR.filter(g => g.statut !== "Clôturée").forEach(g => out.push({ app:"gar", titre:`${g.num} — ${g.client}`,
+      sub:"Garantie", pill:g.statut, pc:"#7a3db8", prio:2 }));
+  }
+  return out.sort((a, b) => a.prio - b.prio);
+}
+
+/* =================== RENDU =================== */
+function renderDash(){
+  const u = current;
+  $("#u-name").textContent = u.name;
+  $("#u-roles").innerHTML = (u.admin ? `<span class="rb" style="background:#c8102e">Admin portail</span>` : "") +
+    Object.entries(u.roles).map(([a, ro]) => `<span class="rb">${esc(APPS.find(x => x.id === a).ico)} · ${esc(ro)}</span>`).join("");
+  const h = new Date().getHours();
+  $("#hello").textContent = `${h < 18 ? "Bonjour" : "Bonsoir"} ${u.name.split(" ")[0]}`;
+  const nb = Object.keys(u.roles).length;
+  $("#hello-sub").textContent = `${nb} application${nb > 1 ? "s" : ""} disponible${nb > 1 ? "s" : ""} — ` +
+    new Date().toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long" });
+  $("#tab-admin").classList.toggle("hidden", !u.admin);
+
+  $("#tiles").innerHTML = APPS.filter(a => u.roles[a.id]).map(a => {
+    const role = u.roles[a.id];
+    const k = kpisFor(a.id, role, u);
+    return `<div class="tile" style="--c:${a.color}">
+      <div class="tile-h"><div class="ico">${esc(a.ico)}</div>
+        <div><h3>${esc(a.name)}</h3><small>${esc(a.sub)} · <b>${esc(role)}</b></small></div></div>
+      <div class="kpis">${k.map(x => `<div class="kpi${x.alert ? " alert" : ""}"><b>${esc(x.v)}</b><span>${esc(x.l)}</span></div>`).join("")}</div>
+      <button class="btn steel" data-open="${a.id}">Ouvrir</button>
+    </div>`;
+  }).join("");
+
+  const t = todosFor(u);
+  $("#todos").innerHTML = t.length ? t.map(x => {
+    const a = APPS.find(p => p.id === x.app);
+    return `<div class="todo"><span class="tag" style="background:${a.color}">${esc(a.ico)}</span>
+      <div class="t">${esc(x.titre)}<small>${esc(x.sub)}</small></div>
+      <span class="pill" style="background:${x.pc}">${esc(x.pill)}</span></div>`;
+  }).join("") : `<div class="empty">Rien à traiter pour le moment.</div>`;
+}
+
+function renderAdmin(){
+  const head = `<tr><th>Nom</th><th>Email</th><th>Actif</th><th>Admin</th>${APPS.map(a => `<th title="${esc(a.name)}">${esc(a.ico)}</th>`).join("")}</tr>`;
+  const rows = USERS.map(u => {
+    const me = u.id === current.id;
+    return `<tr>
+      <td><input data-name="${u.id}" value="${esc(u.name)}" style="min-width:140px"></td>
+      <td>${esc(u.email)}</td>
+      <td><input type="checkbox" data-active="${u.id}"${u.active ? " checked" : ""}${me ? " disabled" : ""} style="width:auto"></td>
+      <td><input type="checkbox" data-admin="${u.id}"${u.admin ? " checked" : ""}${me ? " disabled" : ""} style="width:auto"></td>
+      ${APPS.map(a => `<td><select data-u="${u.id}" data-a="${a.id}">
+        <option value="">—</option>${a.roles.map(r => `<option${u.roles[a.id] === r ? " selected" : ""}>${esc(r)}</option>`).join("")}
+      </select></td>`).join("")}</tr>`;
+  }).join("");
+  $("#admin-table").innerHTML = head + (rows || `<tr><td colspan="${APPS.length + 4}" class="empty">Aucun utilisateur.</td></tr>`);
+}
+
+function flash(msg, err){
+  const m = $("#adm-msg");
+  m.style.color = err ? "var(--red)" : "var(--ok)";
+  m.textContent = msg;
+  clearTimeout(flash.t); flash.t = setTimeout(() => m.textContent = "", 3000);
+}
+
+function showTab(tab){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab === tab));
+  $("#view-dash").classList.toggle("hidden", tab !== "dash");
+  $("#view-admin").classList.toggle("hidden", tab !== "admin");
+  if (tab === "admin") loadAdmin(); else renderDash();
+}
+
+/* =================== DONNÉES SUPABASE =================== */
+function toUser(row, roleRows){
+  const roles = {};
+  roleRows.filter(r => r.user_id === row.id).forEach(r => roles[r.app_id] = r.role);
+  return { id:row.id, name:row.full_name, email:row.email, admin:row.is_admin, active:row.active, roles };
+}
+
+async function loadCurrent(session){
+  const uid = session.user.id;
+  const [{ data: me, error: e1 }, { data: roles, error: e2 }] = await Promise.all([
+    sb.from("portal_users").select("*").eq("id", uid).maybeSingle(),
+    sb.from("user_app_roles").select("*").eq("user_id", uid)
+  ]);
+  if (e1 || e2) throw (e1 || e2);
+  if (!me) throw new Error("Ce compte n'est pas enregistré dans le portail.");
+  if (!me.active) throw new Error("Ce compte est désactivé. Contacter l'administrateur.");
+  return toUser(me, roles || []);
+}
+
+async function loadAdmin(){
+  const [{ data: users, error: e1 }, { data: roles, error: e2 }] = await Promise.all([
+    sb.from("portal_users").select("*").order("full_name"),
+    sb.from("user_app_roles").select("*")
+  ]);
+  if (e1 || e2){ flash("Erreur de chargement : " + (e1 || e2).message, true); return; }
+  USERS = users.map(u => toUser(u, roles || []));
+  renderAdmin();
+}
+
+function enterApp(user){
+  current = user;
+  $("#login").classList.add("hidden");
+  $("#app").classList.remove("hidden");
+  showTab("dash");
+}
+
+function showLogin(msg){
+  current = null;
+  $("#app").classList.add("hidden");
+  $("#login").classList.remove("hidden");
+  $("#l-err").textContent = msg || "";
+}
+
+async function startFromSession(session){
+  try { enterApp(await loadCurrent(session)); }
+  catch (err){ await sb.auth.signOut(); showLogin(err.message); }
+}
+
+/* =================== ÉVÉNEMENTS =================== */
+$("#login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.submitter; if (btn) btn.disabled = true;
+  $("#l-err").textContent = "";
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: $("#l-email").value.trim(), password: $("#l-pass").value });
+  if (btn) btn.disabled = false;
+  if (error){ $("#l-err").textContent = "Email ou mot de passe incorrect."; return; }
+  $("#l-pass").value = "";
+  await startFromSession(data.session);
+});
+
+$("#logout").addEventListener("click", async () => {
+  await sb.auth.signOut();
+  showLogin();
+});
+
+$("#tabs").addEventListener("click", e => {
+  const t = e.target.closest(".tab");
+  if (t) showTab(t.dataset.tab);
+});
+
+$("#tiles").addEventListener("click", e => {
+  const b = e.target.closest("[data-open]");
+  if (!b) return;
+  const a = APPS.find(x => x.id === b.dataset.open);
+  if (a.url === "#") { alert(`« ${a.name} » n'est pas encore en ligne.`); return; }
+  window.location.href = a.url; // même fenêtre → reste en plein écran
+});
+
+$("#admin-table").addEventListener("change", async e => {
+  const el = e.target;
+  let error, u;
+  if (el.matches("select[data-u]")){
+    u = USERS.find(x => x.id === el.dataset.u);
+    const app = el.dataset.a;
+    if (el.value){
+      ({ error } = await sb.from("user_app_roles").upsert({ user_id:u.id, app_id:app, role:el.value }));
+      if (!error) u.roles[app] = el.value;
+    } else {
+      ({ error } = await sb.from("user_app_roles").delete().eq("user_id", u.id).eq("app_id", app));
+      if (!error) delete u.roles[app];
+    }
+  } else if (el.matches("[data-name]")){
+    u = USERS.find(x => x.id === el.dataset.name);
+    const v = el.value.trim();
+    if (!v){ el.value = u.name; return; }
+    ({ error } = await sb.from("portal_users").update({ full_name:v }).eq("id", u.id));
+    if (!error) u.name = v;
+  } else if (el.matches("[data-active]")){
+    u = USERS.find(x => x.id === el.dataset.active);
+    ({ error } = await sb.from("portal_users").update({ active:el.checked }).eq("id", u.id));
+    if (!error) u.active = el.checked;
+  } else if (el.matches("[data-admin]")){
+    u = USERS.find(x => x.id === el.dataset.admin);
+    ({ error } = await sb.from("portal_users").update({ is_admin:el.checked }).eq("id", u.id));
+    if (!error) u.admin = el.checked;
+  } else return;
+  if (error){ flash("Non enregistré : " + error.message, true); renderAdmin(); }
+  else {
+    flash(`✓ Enregistré (${u.name})`);
+    if (u.id === current.id){ current.roles = { ...u.roles }; current.name = u.name; }
+  }
+});
+
+/* =================== DÉMARRAGE =================== */
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) startFromSession(data.session);
+});
+</script>
+</body>
+</html>
